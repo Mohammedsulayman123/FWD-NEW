@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Dashboard - Feeding India</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <style>
+        body {
+            background-color: #121212; /* Dark background */
+            color: #ffffff; /* Light text */
+            font-family: Arial, sans-serif;
+        }
+
+        .dashboard-layout {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #1e1e1e; /* Sidebar background */
+            padding: 20px;
+        }
+
+        .sidebar .logo {
+            color: #dc3545; /* Red color for the logo */
+            font-size: 24px; /* Logo font size */
+            margin-bottom: 20px; /* Space below logo */
+        }
+
+        .sidebar a {
+            color: #ffffff; /* Sidebar link color */
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+        }
+
+        .sidebar a.active {
+            background-color: #dc3545; /* Active link color */
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background-color: #2a2a2a; /* Card background */
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #dc3545; /* Stat number color */
+        }
+
+        .active-donations {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #2a2a2a; /* Header background */
+        }
+
+        .btn {
+            padding: 10px 15px; /* Button padding */
+            border: none; /* Remove border */
+            border-radius: 4px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor */
+        }
+
+        .btn-primary {
+            background-color: #28a745; /* Green background */
+            color: white; /* White text */
+        }
+
+        .btn-secondary {
+            background-color: #dc3545; /* Red background */
+            color: white; /* White text */
+        }
+
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto; /* Center the modal */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%; /* Responsive width */
+            max-width: 500px; /* Max width for larger screens */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+        }
+
+        .form-group {
+            margin-bottom: 15px; /* Space between form groups */
+        }
+
+        .form-label {
+            display: block; /* Make label a block element */
+            margin-bottom: 5px; /* Space between label and input */
+            font-weight: bold; /* Bold text for labels */
+        }
+
+        .form-control {
+            width: 100%; /* Full width */
+            padding: 10px; /* Padding for inputs */
+            border: 1px solid #ccc; /* Border for inputs */
+            border-radius: 4px; /* Rounded corners */
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="logo">Feeding India</div>
+            <nav>
+                <a href="restaurant-dashboard.html" class="active">Dashboard</a>
+                <a href="my-donations.html">My Donations</a>
+                <a href="restaurant-profile.html">Profile</a>
+                <a href="#" id="logoutButton">Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="dashboard-header">
+                <h1>Restaurant Dashboard</h1>
+                <input type="text" id="locationSearch" placeholder="Search by location..." class="search-input" style="padding: 10px;">
+            </header>
+
+            <!-- Total Donations Display -->
+            <div id="totalDonations" style="margin: 20px; font-size: 20px;">
+                Total Donations: <span id="donationCount">0</span>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="stats">
+                <div class="stat-card">
+                    <h2>Total Donations</h2>
+                    <p id="totalDonationsCount">156</p>
+                </div>
+                <div class="stat-card">
+                    <h2>Active Donations</h2>
+                    <p id="activeDonationsCount">4</p>
+                </div>
+                <div class="stat-card">
+                    <h2>NGOs Helped</h2>
+                    <p id="ngosHelped">45</p>
+                </div>
+                <div class="stat-card">
+                    <h2>Meals Donated</h2>
+                    <p id="mealsDonated">1,234</p>
+                </div>
+            </div>
+
+            <!-- Active Donations Table -->
+            <div class="active-donations">
+                <h2>Active Donations</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Food Type</th>
+                            <th>Quantity</th>
+                            <th>Pickup Until</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="donationList">
+                        <!-- Existing donations will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Donation Modal -->
+            <div class="modal" id="donationModal">
+                <div class="modal-content">
+                    <h2>Create New Donation</h2>
+                    <form class="donation-form" id="donationForm">
+                        <div class="form-group">
+                            <label class="form-label" for="foodType">Food Type</label>
+                            <input type="text" class="form-control" id="foodType" placeholder="e.g., Rice and Curry" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="quantity">Quantity (in meals)</label>
+                            <input type="number" class="form-control" id="quantity" required min="1" placeholder="e.g., 10">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="pickupLocation">Pickup Location</label>
+                            <input type="text" class="form-control" id="pickupLocation" placeholder="e.g., Bangalore" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="availableUntil">Available Until</label>
+                            <input type="datetime-local" class="form-control" id="availableUntil" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="additionalNotes">Additional Notes</label>
+                            <textarea class="form-control" id="additionalNotes" placeholder="Any additional information..."></textarea>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="submit" class="btn btn-primary">Create Donation</button>
+                            <button type="button" class="btn btn-secondary" id="closeModal">Cancel</button>
+                        </div>
+                    </form>
+                    <div id="errorMessages"></div>
+                </div>
+            </div>
+
+            <script>
+                let donationCount = 0; // Initialize donation count
+                let editingIndex = null; // Track which donation is being edited
+                let donations = []; // Array to hold donations
+
+                // Load donations from local storage
+                function loadDonations() {
+                    donations = JSON.parse(localStorage.getItem('donations')) || [];
+                    donationCount = donations.length;
+                    document.getElementById('donationCount').innerText = donationCount;
+
+                    const donationList = document.getElementById('donationList');
+                    donationList.innerHTML = ''; // Clear existing entries
+
+                    donations.forEach((donation, index) => {
+                        const donationItem = document.createElement('tr');
+                        donationItem.innerHTML = `
+                            <td>${donation.foodType}</td>
+                            <td>${donation.quantity} meals</td>
+                            <td>${donation.availableUntil}</td>
+                            <td><span style="color: yellow;">Pending</span></td>
+                            <td>
+                                <button class="btn btn-secondary" onclick="editDonation(this, ${index})">Edit</button>
+                                <button class="btn btn-secondary" onclick="deleteDonation(this)">Cancel</button>
+                            </td>
+                        `;
+                        donationList.appendChild(donationItem);
+                    });
+                }
+
+                // Show the donation modal
+                document.getElementById('newDonationBtn').addEventListener('click', function() {
+                    document.getElementById('donationModal').style.display = 'block';
+                    document.getElementById('errorMessages').style.display = 'none'; // Reset error messages
+                    clearForm(); // Clear the form for new donation
+                });
+
+                // Close the modal
+                document.getElementById('closeModal').addEventListener('click', function() {
+                    document.getElementById('donationModal').style.display = 'none';
+                });
+
+                // Handle form submission
+                document.getElementById('donationForm').addEventListener('submit', function(event) {
+                    event.preventDefault(); // Prevent the default form submission
+
+                    // Get form values
+                    const foodType = document.getElementById('foodType').value.trim();
+                    const quantity = document.getElementById('quantity').value;
+                    const pickupLocation = document.getElementById('pickupLocation').value.trim();
+                    const availableUntil = document.getElementById('availableUntil').value;
+                    const additionalNotes = document.getElementById('additionalNotes').value.trim();
+
+                    // Clear previous error messages
+                    const errorMessages = [];
+                    if (!foodType) errorMessages.push("Food type is required.");
+                    if (!quantity || quantity <= 0) errorMessages.push("Valid quantity is required.");
+                    if (!pickupLocation) errorMessages.push("Pickup location is required.");
+                    if (!availableUntil) errorMessages.push("Available until time is required.");
+
+                    // Display error messages if any
+                    if (errorMessages.length > 0) {
+                        document.getElementById('errorMessages').innerText = errorMessages.join(' ');
+                        document.getElementById('errorMessages').style.display = 'block';
+                        return;
+                    }
+
+                    // If editing, update the existing donation
+                    if (editingIndex !== null) {
+                        const donationList = document.getElementById('donationList');
+                        const donationRow = donationList.rows[editingIndex];
+                        donationRow.cells[0].innerText = foodType;
+                        donationRow.cells[1].innerText = `${quantity} meals`;
+                        donationRow.cells[2].innerText = availableUntil;
+                        donationRow.cells[3].innerText = "Pending"; // Reset status
+                        editingIndex = null; // Reset editing index
+                    } else {
+                        // If all validations pass, log the new donation
+                        console.log('New Donation:', { foodType, quantity, pickupLocation, availableUntil, additionalNotes });
+
+                        // Increment donation count and update display
+                        donationCount++;
+                        document.getElementById('donationCount').innerText = donationCount;
+
+                        // Add the new donation to the donation list
+                        const donationList = document.getElementById('donationList');
+                        const donationItem = document.createElement('tr');
+                        donationItem.innerHTML = `
+                            <td>${foodType}</td>
+                            <td>${quantity} meals</td>
+                            <td>${availableUntil}</td>
+                            <td><span style="color: yellow;">Pending</span></td>
+                            <td>
+                                <button class="btn btn-secondary" onclick="editDonation(this)">Edit</button>
+                                <button class="btn btn-secondary" onclick="deleteDonation(this)">Cancel</button>
+                            </td>
+                        `;
+                        donationList.appendChild(donationItem);
+
+                        // Save donation to local storage
+                        saveDonation({ foodType, quantity, pickupLocation, availableUntil, additionalNotes });
+                    }
+
+                    // Update active donations count
+                    const activeDonationsCount = document.getElementById('activeDonationsCount');
+                    activeDonationsCount.innerText = parseInt(activeDonationsCount.innerText) + 1;
+
+                    // Close the modal after submission
+                    document.getElementById('donationModal').style.display = 'none';
+
+                    // Optionally, reset the form
+                    clearForm();
+                });
+
+                function saveDonation(donation) {
+                    const donations = JSON.parse(localStorage.getItem('donations')) || [];
+                    donations.push(donation);
+                    localStorage.setItem('donations', JSON.stringify(donations));
+                }
+
+                function clearForm() {
+                    document.getElementById('foodType').value = '';
+                    document.getElementById('quantity').value = '';
+                    document.getElementById('pickupLocation').value = '';
+                    document.getElementById('availableUntil').value = '';
+                    document.getElementById('additionalNotes').value = '';
+                    document.getElementById('errorMessages').style.display = 'none'; // Reset error messages
+                }
+
+                function editDonation(button, index) {
+                    const row = button.closest('tr');
+                    const foodType = row.cells[0].innerText;
+                    const quantity = row.cells[1].innerText.split(' ')[0]; // Get only the number
+                    const pickupUntil = row.cells[2].innerText;
+
+                    // Populate the form with existing values
+                    document.getElementById('foodType').value = foodType;
+                    document.getElementById('quantity').value = quantity;
+                    document.getElementById('pickupLocation').value = ''; // Assuming pickup location is not stored in the table
+                    document.getElementById('availableUntil').value = pickupUntil;
+                    document.getElementById('additionalNotes').value = ''; // Assuming additional notes are not stored in the table
+
+                    // Show the modal
+                    document.getElementById('donationModal').style.display = 'block';
+
+                    // Set editing index
+                    editingIndex = index;
+                }
+
+                function deleteDonation(button) {
+                    const row = button.closest('tr');
+                    const donationList = document.getElementById('donationList');
+                    const index = Array.from(donationList.rows).indexOf(row);
+                    row.remove(); // Remove the donation from the table
+
+                    // Update active donations count
+                    const activeDonationsCount = document.getElementById('activeDonationsCount');
+                    activeDonationsCount.innerText = parseInt(activeDonationsCount.innerText) - 1;
+
+                    // Update total donations count
+                    const totalDonationsCount = document.getElementById('donationCount');
+                    totalDonationsCount.innerText = parseInt(totalDonationsCount.innerText) - 1;
+
+                    // Remove from local storage
+                    removeDonation(index);
+                }
+
+                function removeDonation(index) {
+                    const donations = JSON.parse(localStorage.getItem('donations')) || [];
+                    donations.splice(index, 1); // Remove the donation at the specified index
+                    localStorage.setItem('donations', JSON.stringify(donations));
+                }
+
+                // Search by location functionality
+                document.getElementById('locationSearch').addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const filteredDonations = donations.filter(donation => 
+                        donation.pickupLocation.toLowerCase().includes(searchTerm)
+                    );
+
+                    const donationList = document.getElementById('donationList');
+                    donationList.innerHTML = ''; // Clear existing entries
+
+                    filteredDonations.forEach(donation => {
+                        const donationItem = document.createElement('tr');
+                        donationItem.innerHTML = `
+                            <td>${donation.foodType}</td>
+                            <td>${donation.quantity} meals</td>
+                            <td>${donation.availableUntil}</td>
+                            <td><span style="color: yellow;">Pending</span></td>
+                            <td>
+                                <button class="btn btn-secondary" onclick="editDonation(this)">Edit</button>
+                                <button class="btn btn-secondary" onclick="deleteDonation(this)">Cancel</button>
+                            </td>
+                        `;
+                        donationList.appendChild(donationItem);
+                    });
+                });
+
+                // Load donations when the page loads
+                window.onload = loadDonations;
+
+                document.getElementById('logoutButton').addEventListener('click', function() {
+                    // Clear session storage
+                    sessionStorage.removeItem('currentUser');
+                    // Redirect to login page
+                    window.location.href = 'login.html';
+                });
+            </script>
+        </main>
+    </div>
+</body>
+</html> 
